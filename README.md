@@ -16,7 +16,7 @@ This project is used to deal with invalidation of maven dependency
 + filestools==0.1.2
 
 ## Usage
-+ Use <code>python main.py -p <file_path></code> to repair invalid maven dependency in a pom.xml file.
++ Use <code>python main.py -p <file_path></code> to repair invalid maven dependency in a **pom.xml** file.
 + Use <code>python test.py -o <file_path> -t <file_path></code> to compare two files and get differences between two files and save as **diff_result.html**.
 
 ### Example
