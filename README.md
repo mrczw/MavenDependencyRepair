@@ -23,4 +23,4 @@ This project is used to deal with invalidation of maven dependency
 + First, you can create two files named pom_origin.xml and pom.xml (which has been created in **pom** directory). This two file have the same content.
 + Second, use <code>python main.py -p ./pom/pom.xml</code> to repair invalid dependency in pom.xml.
 + Third, use <code>python main.py -o ./pom/pom_origin.xml -t ./pom/pom.xml</code> to get differences between two files. The differences between two files will be saved as **diff_result.html**. This html file can be viewed in a browser.  
-![本地路径](.\\img\\file_diff.png "相对路径演示,上一级目录")
+![file_diff](./img/file_diff.png)
