@@ -31,6 +31,8 @@ def modifyPOM(args):
         group_id = child.find('%sgroupId' % POM_NS)
         artifact_id = child.find('%sartifactId' % POM_NS)
         version = child.find('%sversion' % POM_NS)
+        if group_id is None or artifact_id is None or version is None:
+            continue
 
         # 排除掉类似${springframework.version}的依赖或者是以SNAPSHOT结尾的依赖
         if re.match(r"^[\$\{].*\}$", version.text) is not None or re.match(r".*-SNAPSHOT$", version.text) is not None:
@@ -41,11 +43,18 @@ def modifyPOM(args):
         # print(f.content)
         json_data = json.loads(bytes.decode(f.content, 'utf-8'))
         # print(json_data)
-        docs = json_data['response']['docs']
+        if 'response' in json_data:
+            response = json_data['response']
+        else:
+            continue
+        if 'docs' in response:
+            docs = response['docs']
+        else:
+            continue
         # print(docs)
         exist_versions = []
         for doc in docs:
-            if '.pom' in doc['ec']:
+            if '.pom' in doc['ec'] and 'v' in doc['v']:
                 exist_versions.append(doc['v'])
         # print(exist_versions)
 
