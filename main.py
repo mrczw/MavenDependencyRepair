@@ -13,18 +13,20 @@ except ImportError:
 POM_NS = "{http://maven.apache.org/POM/4.0.0}"
 
 
-class CommentedTreeBuilder(ET.TreeBuilder):
-    def comment(self, data):
-        self.start(ET.Comment, {})
-        self.data(data)
-        self.end(ET.Comment)
+# class CommentedTreeBuilder(ET.TreeBuilder):
+#     def comment(self, data):
+#         self.start(ET.Comment, {})
+#         self.data(data)
+#         self.end(ET.Comment)
 
 
 def modifyPOM(args):
     pom_path = args["path"]
-    parser = ET.XMLParser(target=CommentedTreeBuilder())
-    tree = ET.parse(pom_path, parser=parser)
+    # parser = ET.XMLParser(target=CommentedTreeBuilder())
+    # tree = ET.parse(pom_path, parser=parser)
     # tree = ET.parse(pom_path, parser = CommentedTreeBuilder() )
+
+    tree = ET.parse(pom_path)
     root = tree.getroot()
 
     for child in root.iter('%sdependency' % (POM_NS)):
@@ -35,7 +37,7 @@ def modifyPOM(args):
             continue
 
         # 排除掉类似${springframework.version}的依赖或者是以SNAPSHOT结尾的依赖
-        if re.match(r"^[\$\{].*\}$", version.text) is not None or re.match(r".*-SNAPSHOT$", version.text) is not None:
+        if re.match(r"^[\$\{].*\}$", version.text) is not None:
             continue
 
         rest_api = "https://search.maven.org/solrsearch/select?q=g:{}+AND+a:{}&core=gav&rows=20&wt=json".format(group_id.text, artifact_id.text)
@@ -54,10 +56,9 @@ def modifyPOM(args):
         # print(docs)
         exist_versions = []
         for doc in docs:
-            if '.pom' in doc['ec'] and 'v' in doc['v']:
+            if '.pom' in doc['ec'] and 'v' in doc:
                 exist_versions.append(doc['v'])
         # print(exist_versions)
-
         # 如果当前版本在maven仓库里可以找到的话直接跳过
         if version.text in exist_versions:
             continue
@@ -70,7 +71,7 @@ def modifyPOM(args):
             subversion = version.text.split(".")[1]
             stage_version = version.text.split(".")[2]
         else:
-            print("{}.{} has wrong version format!".format(group_id, artifact_id))
+            print("{}.{} has wrong version format!".format(group_id.text, artifact_id.text))
             continue
 
         # 首先看是否能够能够找到对应的主版本号
