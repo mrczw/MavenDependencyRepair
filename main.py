@@ -38,7 +38,8 @@ def modifyPOM(args):
 
         # 排除掉类似${springframework.version}的依赖或者是以SNAPSHOT结尾的依赖
         if re.match(r"^[\$\{].*\}$", version.text) is not None:
-            continue
+            version_text = version.text.lstrip("${").rstrip("}")
+            version = root.find('%sproperties' % POM_NS).find('%s%s' % (POM_NS, version_text))
 
         rest_api = "https://search.maven.org/solrsearch/select?q=g:{}+AND+a:{}&core=gav&rows=20&wt=json".format(group_id.text, artifact_id.text)
         f = requests.get(rest_api)
